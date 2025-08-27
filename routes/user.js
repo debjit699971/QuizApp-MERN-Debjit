@@ -12,45 +12,68 @@ router.route("/").get((req, res) => {
 
 router.route("/add").post(async (req, res) => {
   try {
+    console.log("📩 Incoming Register Request:", req.body);   // <-- DEBUG
+
     const name = req.body.name;
     const email = req.body.email.toLowerCase();
     const password = await bcrypt.hash(req.body.password, 10);
 
     const doc = await user.findOne({ email }).exec();
     if (doc) {
-      return res.status(400).send({ message: "Account already exists!" });
+      console.log("⚠️ Account already exists:", email);   // <-- DEBUG
+      return res.status(400).json({ message: "Account already exists!" });
     }
 
     const newuser = new user({ name, email, password });
-    newuser
-      .save()
-      .then(() => res.send("user added!"))
-      .catch((err) => res.status(400).json("error : " + err));
+    await newuser.save();
+
+    console.log("✅ User Registered:", email);   // <-- DEBUG
+    return res.status(200).json({ message: "User added successfully!" });
   } catch (err) {
-    return res.status(400).send();
+    console.error("❌ Registration Error:", err);   // <-- DEBUG
+    return res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
 router.route("/login").post(async (req, res) => {
-  const email = req.body.email.toLowerCase();
-  const password = req.body.password;
+  try {
+    const email = req.body.email.toLowerCase();
+    const password = req.body.password;
 
-  const doc = await user.findOne({ email }).exec();
-  if (!doc) {
-    return res.status(400).send();
-  }
+    console.log("📩 Incoming Login Request:", { email, password }); // DEBUG
 
-  const passwordCheck = bcrypt.compareSync(password, doc.password);
-  if (!passwordCheck) {
-    return res.status(400).send();
-  } else {
+    const doc = await user.findOne({ email }).exec();
+    if (!doc) {
+      console.log("❌ No account found with:", email);
+      return res.status(400).json({ message: "Account not found" });
+    }
+    
+    console.log("🔐 Plain password received from frontend:", password);
+    console.log("🔐 Stored hash in DB:", doc.password);
+
+    // Compare plain password with hashed password in DB
+    const passwordCheck = await bcrypt.compare(password, doc.password);
+
+    if (!passwordCheck) {
+      console.log("❌ Wrong password for:", email);
+      return res.status(400).json({ message: "Wrong Credentials!" });
+    }
+
+    // Generate JWT token
     const token = jwt.sign(
       { id: doc._id, email: doc.email },
       process.env.ACCESS_TOKEN_SECRET
     );
+
     res.setHeader("Access-Control-Expose-Headers", "*");
     res.setHeader("auth-token", token);
-    return res.status(200).send({ name: doc.name });
+
+    console.log("✅ Login successful for:", email);
+    return res.status(200).json({ name: doc.name });
+
+  } catch (err) {
+    console.error("❌ Login Error:", err);
+    return res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 

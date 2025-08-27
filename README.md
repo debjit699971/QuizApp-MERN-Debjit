@@ -1,47 +1,52 @@
 # QuizApp
-**Visit the website:** https://quizchamp.herokuapp.com/ [deployment inactive]
 
-## About:
-This is a simple online quiz application made with MERN-stack. It is fully responsive and mobile-friendly.
-
----
-## Objectives
-### Completed User Stories:
-
-#### As an Assessor
-+ I should be able to create tests from 24 different categories and set other parameters( Time duration , Test Expiry and Number of Questions(<50) )
-+ I should be able to take tests.
-+ I should be able to view tests created by me and results of those tests.
-
-#### As an Examine
-+ I should be able to take tests after providing my information.
-+ I should be able to take each test only once.
-+ I should not be able to take tests after its expiry.
-+ The test should auto-submit when the time expiries.
-
-#### As a secure app
-+ No one should have access to test information or test results without authentication.
-+ Test questions keeps changing to avoiding cheating.
-
----
-## Tech-Stack
-
-### Front-End:
-The front-end is developed using **HTML5** , **CSS3** and **React (a modern javascript-framework)**.  
-**React-Router-DOM** is used for navigating between different view of the SPA.  
-**Bubbling and Capturing** is used for DOM manupilation.  
-**LocalStorage** is used for client side caching.  
-**React-Modal** is used to creating popups.  
-
-### Back-End:
-The backend is developed in **Nodejs (a javascript runtime envionment)**,  **ExpressJS (a minimalistic web framework)** and **MongoDB (as a database)**.  
-**Mongoose(Object-Document-Mapper)** is used to help writing queries for CRUD operations in JS as an alternative to NoSQL.  
-**bcryptjs** is used to store passwords as hashed passwords.  
-**JWT(Javascript web token)** authorization is used to authorize access to protected endpoints.  
-The backend is responsible for serving both the front-end and the back-end.  
-
-### Connecting Front-End with Back-End:
-**Axios** a promise based http library is used to connect the front-end and the backend.
+A simple and secure **Online Quiz Application** built with the **MERN stack (MongoDB, Express, React, Node.js)**.  
+It allows assessors to create tests and examinees to take them with proper authentication and restrictions.  
 
 ---
 
+## 🚀 Features
+
+### 👨‍🏫 Assessor (Test Creator)
+- Create tests from 24 categories.
+- Configure:
+  - Time duration ⏱
+  - Test expiry 📅
+  - Number of questions (< 50)
+- View all tests created by you.
+- View results of each test.
+
+### 👨‍🎓 Examinee (Test Taker)
+- Enter **Name** + **Pin** to take test (no email required).
+- Can take each test **only once**.
+- Cannot access expired tests.
+- Auto-submit when time expires.
+- Smooth navigation with centered arrows (← →).
+
+### 🔒 Security
+- Passwords stored using **bcrypt hashing**.
+- Authentication via **JWT tokens**.
+- Results & tests are protected (only assessors can view them).
+- Test questions are randomized to prevent cheating.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React** (SPA)
+- **React Router DOM** (routing)
+- **LocalStorage** (session handling)
+- **Axios** (API calls)
+- **CSS3 Modules** for styling
+- Responsive & mobile-friendly UI
+
+### Backend
+- **Node.js** + **Express.js**
+- **MongoDB** + **Mongoose** (ODM)
+- **bcrypt** (password hashing)
+- **JWT** (auth middleware)
+
+---
+
+## 📂 Project Structure

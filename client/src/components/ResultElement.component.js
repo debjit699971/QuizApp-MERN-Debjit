@@ -20,7 +20,7 @@ function Resultelement(props) {
         <span className={styles.mobileinfo}>
           <strong>Score : </strong>
         </span>
-        {props.score}%
+        {props.score}/{props.total}   {/* ✅ shows like 2/10 */}
       </div>
     </div>
   );

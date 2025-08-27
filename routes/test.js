@@ -4,47 +4,65 @@ const result = require("../models/result.model");
 const axios = require("axios");
 const verify = require("./verifyToken");
 
+// 🚀 Start Test
 router.route("/").post(async (req, res) => {
   const testid = req.body.pin;
   const email = req.body.email.toLowerCase();
+
   const doc = await test.findOne({ pin: testid }).exec();
   if (!doc) {
     return res.status(400).send({ message: "Test doesn't exist!" });
   }
+
   if (Date.parse(doc.expiry) < Date.now()) {
     return res.status(400).send({ message: "Test has expired!! " });
   }
+
   const check = await result.findOne({ pin: testid, email }).exec();
   if (check) {
     return res.status(400).send({ message: "Test already taken!" });
   }
+
   const questions = await axios.get("https://opentdb.com/api.php", {
     params: {
       amount: doc.amount,
       category: doc.topic,
     },
   });
+
   questions.data.time = doc.time;
+
   if (questions.data.response_code == 0) return res.send(questions.data);
-  else
+  else {
     return res
       .status(400)
       .send({ message: "Couldn't fetch test details. Try again!" });
+  }
 });
 
+// 🚀 Submit Test
 router.route("/submittest").post(async (req, res) => {
   const score = parseInt(req.body.score);
+  const total = parseInt(req.body.total); // ✅ capture total questions
   const email = req.body.email.toLowerCase();
   const name = req.body.name;
   const pin = req.body.pin;
 
-  const resultEntry = new result({ email, name, pin, score });
+  const resultEntry = new result({
+    email,
+    name,
+    pin,
+    score,
+    total, // ✅ store total also
+  });
+
   resultEntry
     .save()
     .then(() => res.send("result added!"))
     .catch((err) => res.status(400).json("error : " + err));
 });
 
+// 🚀 Get Tests
 router.use("/gettests", verify);
 router.use("/getresults", verify);
 router.use("/addtest", verify);
@@ -60,6 +78,7 @@ router.route("/gettests").post(async (req, res) => {
   }
 });
 
+// 🚀 Get Results
 router.route("/getresults").post(async (req, res) => {
   const pin = req.body.pin;
   try {
@@ -70,6 +89,7 @@ router.route("/getresults").post(async (req, res) => {
   }
 });
 
+// 🚀 Add Test
 router.route("/addtest").post(async (req, res) => {
   const pin = (await test.countDocuments({}).exec()) + 1000;
   const email = req.user.email.toLowerCase();
@@ -88,6 +108,7 @@ router.route("/addtest").post(async (req, res) => {
     expiry,
     created,
   });
+
   newtest
     .save()
     .then(() => res.send("test added!"))

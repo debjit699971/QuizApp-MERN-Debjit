@@ -10,12 +10,7 @@ function Header(props) {
   return (
     <div className={styles.header}>
       <div className={styles.navitems}>
-        <div className={styles.logo}>
-          <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-            {" "}
-            HOME{" "}
-          </Link>
-        </div>
+        {/* HOME removed */}
         <div className={styles.navlinks2}>
           {location.pathname === "/login" ||
           location.pathname === "/register" ? (

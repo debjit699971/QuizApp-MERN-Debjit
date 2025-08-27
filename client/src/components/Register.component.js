@@ -19,6 +19,11 @@ function Register() {
   const submithandler = (e) => {
     e.preventDefault();
 
+    if (password !== c_password) {
+      alert("Passwords do not match!");
+      return;
+    }
+
     const options = {
       headers: {
         "Content-Type": "application/json",
@@ -26,13 +31,13 @@ function Register() {
     };
 
     axios
-      .post("/api/user/add", { name, email, password }, options)
+      .post("http://localhost:5000/api/user/add", { name, email, password }, options)
       .then((res) => {
-        alert("account created");
-        history.push('/login');
+        alert("Account created!");
+        history.push("/login");
       })
       .catch((err) => {
-        alert(err.response.data.message);
+        alert(err.response?.data?.message || "Registration failed!");
       });
   };
 

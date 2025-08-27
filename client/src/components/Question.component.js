@@ -9,7 +9,7 @@ function Question(props) {
 
   const res = props.location.state.res;
   const mins = res.time.split(":")[0];
-  const secs = (res.time.split(":")[1])? res.time.split(":")[1] : 0 ;
+  const secs = res.time.split(":")[1] ? res.time.split(":")[1] : 0;
   const length = res.results.length;
   const [ques, setques] = useState(0);
   const [options, setoptions] = useState([]);
@@ -23,168 +23,100 @@ function Question(props) {
 
     let score = 0;
     for (let i = 0; i < length; i++) {
-      if (answers[i] == res.results[i].correct_answer) {
+      if (answers[i] === res.results[i].correct_answer) {
         score += 1;
       }
     }
-    score = (score / length) * 100;
-    const options = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+
     axios
       .post(
         "/api/test/submittest",
-        {
-          pin,
-          email,
-          name,
-          score,
-        },
-        options
+        { pin, email, name, score, total: length },
+        { headers: { "Content-Type": "application/json" } }
       )
-      .then((res) => {
-        console.log(res);
-        history.push("/");
-      })
+      .then(() => history.push("/abouttest", { pin }))
       .catch((err) => console.log(err));
-    console.log(score);
   };
 
   function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
-      // Generate random number
       var j = Math.floor(Math.random() * (i + 1));
-
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
+      [array[i], array[j]] = [array[j], array[i]];
     }
-
     return array;
   }
 
   useEffect(() => {
     for (let i = 0; i < length; i++) {
-      res.results[i].question = res.results[i].question.replace(
-        /&#?\w+;/g,
-        (match) => entities[match]
-      );
-      res.results[i].correct_answer = res.results[i].correct_answer.replace(
-        /&#?\w+;/g,
-        (match) => entities[match]
-      );
-      res.results[ques].incorrect_answers = res.results[
-        ques
-      ].incorrect_answers.map((x) =>
-        x.replace(/&#?\w+;/g, (match) => entities[match])
+      res.results[i].question = decodeHTML(res.results[i].question);
+      res.results[i].correct_answer = decodeHTML(res.results[i].correct_answer);
+      res.results[i].incorrect_answers = res.results[i].incorrect_answers.map(
+        (x) => decodeHTML(x)
       );
     }
   }, []);
 
   useEffect(() => {
     setquestion(res.results[ques].question);
-    setoptions([
+    const newOptions = [
       res.results[ques].correct_answer,
       ...res.results[ques].incorrect_answers,
-    ]);
-    shuffleArray(options);
+    ];
+    setoptions(shuffleArray(newOptions));
   }, [ques]);
 
-  const entities = {
-    "&#039;": "'",
-    "&quot;": '"',
-    "&lt;": "<",
-    "&gt;": ">",
-    "&#39;": "'",
-    "&#34;": "'",
-    "&#034;": '"',
-    "&#60;": "<",
-    "&#060;": "<",
-    "&#62;": ">",
-    "&#062;": ">",
-    "&amp;": "&",
-    "&#38;": "&",
-    "&#038;": "&",
-  };
-
-  const changeclass = (e) => {
-    const domele = e.nativeEvent.path;
-    domele.reverse();
-    let ans = "";
-    for (let ele of domele) {
-      if (ele.id === "options") {
-        for (let ans of ele.childNodes) {
-          ans.className = styles.container;
-        }
-      } else if (ele.localName === "div" && ele.id === "") {
-        ele.className = styles.containeractive;
-        ans = ele.childNodes[0].value;
-      }
-    }
-    setanswers({ ...answers, [ques]: ans });
+  const decodeHTML = (str) => {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = str;
+    return textarea.value;
   };
 
   return (
     <Fragment>
       <TestNav mins={mins} secs={secs} submithandler={submithandler} />
+
       <div className={styles.qcontainer}>
         {ques + 1}. {question}
       </div>
+
       <div id="options">
         {options.map((option, index) => (
-          <div key={index} className={styles.container} onClick={changeclass}>
+          <label
+            key={index}
+            className={
+              answers[ques] === option
+                ? styles.containeractive
+                : styles.container
+            }
+          >
             <input
               className={styles.radios}
               type="radio"
               value={option}
-              name="options"
-              id={index.toString()}
+              name={`options-${ques}`}
+              checked={answers[ques] === option}
+              onChange={(e) =>
+                setanswers({ ...answers, [ques]: e.target.value })
+              }
             />
-            <label htmlFor={index.toString()}>
-              {String.fromCharCode("A".charCodeAt(0) + index)}. {option}
-            </label>
-          </div>
+            {String.fromCharCode("A".charCodeAt(0) + index)}. {option}
+          </label>
         ))}
       </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <a
-          onClick={(e) => {
-            if (ques == 0) {
-            } else {
-              setques(ques - 1);
-              let answeropt = e.nativeEvent.path[2].childNodes[2].childNodes;
-              for (let opt of answeropt) {
-                opt.className = styles.container;
-              }
-            }
-          }}
-          className={styles.buttons1}
-        >
-          &#8249;
-        </a>
-        <a
-          onClick={(e) => {
-            if (ques == length - 1) {
-            } else {
-              setques(ques + 1);
-              let answeropt = e.nativeEvent.path[2].childNodes[2].childNodes;
-              for (let opt of answeropt) {
-                opt.className = styles.container;
-              }
-            }
-          }}
-          className={styles.buttons2}
-        >
-          &#8250;
-        </a>
-      </div>
+
+      {/* Navigation Arrows */}
+      <div className={styles.navButtons}>
+  {ques > 0 && (
+    <button onClick={() => setques(ques - 1)} className={styles.buttons1}>
+      &#8249;
+    </button>
+  )}
+  {ques < length - 1 && (
+    <button onClick={() => setques(ques + 1)} className={styles.buttons2}>
+      &#8250;
+    </button>
+  )}
+</div>
     </Fragment>
   );
 }

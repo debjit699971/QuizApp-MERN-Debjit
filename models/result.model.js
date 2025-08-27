@@ -16,7 +16,11 @@ const resultSchema = new Schema({
     required: true,
   },
   score: {
-    type: String,
+    type: Number,   // ✅ store as number
+    required: true,
+  },
+  total: {
+    type: Number,   // ✅ new field for total questions
     required: true,
   },
 });
