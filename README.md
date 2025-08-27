@@ -50,3 +50,44 @@ It allows assessors to create tests and examinees to take them with proper authe
 ---
 
 ## 📂 Project Structure
+
+---
+
+## ▶️ How to Use the App
+
+### 1️⃣ Register / Login
+- Open the app → **Register/Login Page**.  
+- New users: **Register** with name, email, and password.  
+- Existing users: **Login** with email + password.  
+
+---
+
+### 2️⃣ Create a Test (Assessor)
+- After login, go to **Dashboard → Create Test**.  
+- Select category, number of questions (<50), time limit, and expiry date.  
+- Save the test.  
+- Share the **Test Pin** with students/examinees.  
+
+---
+
+### 3️⃣ Take a Test (Examinee)
+- Go to **Take Test Page**.  
+- Enter:
+  - **Name**  
+  - **Pin** (provided by the assessor)  
+- Click **Take Test**.  
+- Answer questions → navigate using left (←) and right (→) arrows.  
+- Test will auto-submit when time is up.  
+
+---
+
+### 4️⃣ View Results
+- After submission, results are stored securely.  
+- Examinees can see their own **score immediately**.  
+- Assessors can view **all results of their tests** from the dashboard.  
+
+---
+
+✅ That’s it! Now you can run quizzes securely with assessors & examinees.  
+
+---
